@@ -1,0 +1,7 @@
+<%# start the partial file with '_' and rails will take it as partial e.g _messages.html.erb %>
+
+<% flash.each do |name, msg|%>
+    <%= msg %>
+<% end %>
+
+
