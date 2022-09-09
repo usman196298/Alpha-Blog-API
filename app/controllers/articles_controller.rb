@@ -44,6 +44,7 @@ class ArticlesController < ApplicationController
 
 
     #Applying 'Don't Repeat Yourself Approach (DRY)'
+
     private
     # do not put end after private as it is not a class and we don't need end for it. Also, it should be at the bottom of the code
 
@@ -52,7 +53,7 @@ class ArticlesController < ApplicationController
     end
 
     def article_params
-        params.require(:article).permit(:title, :description)
+        params.require(:article).permit(:title, :description, category_ids[])
     end
 
     def require_same_user
