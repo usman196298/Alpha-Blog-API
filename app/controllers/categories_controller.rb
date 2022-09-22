@@ -1,6 +1,7 @@
 class CategoriesController < ApplicationController
   
   before_action :require_admin, except: [:index, :show]
+  skip_before_action :verify_authenticity_token 
 
   def new
     @category = Category.new
@@ -9,8 +10,9 @@ class CategoriesController < ApplicationController
   def create
     @category = Category.new(category_params)
     if @category.save
-      flash[:notice] = "Category was successfully created"
-      redirect_to @category
+      # flash[:notice] = "Category was successfully created"
+      render json: { message: "Category was successfully created!" }
+      #redirect_to @category
     else
       render 'new'
     end
@@ -23,32 +25,41 @@ class CategoriesController < ApplicationController
   def update
     @category = Category.find(params[:id])
     if @category.update(category_params)
-      flash[:notice] = "Category name updated successfully!"
-      redirect_to @category
+      # flash[:notice] = "Category name updated successfully!"
+      render json: { message: "Category updated Successfully"}
+      #redirect_to @category
     else
       render 'edit'
     end
   end
 
   def index
-    @categories = Category.paginate(page: params[:page], per_page: 5)
+    #@categories = Category.paginate(page: params[:page], per_page: 5)
+    @categories = Category.all
+    #For Postman check
+    render json: @categories, status: 200
   end
 
   def show
     @category = Category.find(params[:id])
-    @articles = @category.articles.paginate(page: params[:page], per_page: 5)
+    render json: @category
+
+    #@articles = @category.articles.paginate(page: params[:page], per_page: 5)
   end
+
+
 
   private
 
   def category_params
-    params.require(:category).permit(:name)
+    params.permit(:name)
   end
 
   def require_admin
     if !(logged_in? && current_user.admin?)
-      flash[:alert] = "Only admins can perform that action"
-      redirect_to categories_path
+      # flash[:alert] = "Only admins can perform that action"
+      # redirect_to categories_path
+      render json: { message: "Only admins can perform that action" }
     end
   end
 
