@@ -11,6 +11,12 @@ module AlphaBlog
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
 
+    #extra lines
+    config.middleware.use ActionDispatch::Cookies  
+    config.middleware.use ActionDispatch::Session::CookieStore  
+
+    config.api_only = false
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

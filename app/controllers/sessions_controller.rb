@@ -1,26 +1,39 @@
 class SessionsController < ApplicationController
-  skip_before_action :verify_authenticity_token 
-
 
   def new
   end
 
+
+  def check 
+    #byebug
+    if (session[:user_id] != nil)
+      render json: {
+      message: 200,
+      user: current_user
+    }
+    else 
+      render json:{message:"not ok"} , status: :unprocessable_entity
+    end
+  end
+
+
   def create
-    if session[:user_id] == nil
-      user = User.find_by(email: params[:session][:email].downcase)
-      if user && user.authenticate(params[:session][:password])
+    # byebug
+    # if session[:user_id] == nil
+      user = User.find_by_email(params[:session][:email].downcase)
+      if user && user.authenticate(params[:password])
         session[:user_id] = user.id
       # flash[:notice]= "Logged in successfully!"
       # redirect_to user
-        render json: { message: "Logged in Successfully!" }
+        render json: { message: "Logged in Successfully!" }, status: :created
       else
-        render json: { message: "There was something wrong with your login details" }
+        render json: { message: "There was something wrong with your login details" }, status: :unprocessable_entity
       end
-    else
+    # else
       # flash.now[:alert]= "There was something wrong with your login details"
       # render 'new'
-      render json: { message: "You are already logged in"}
-    end
+      # render json: { message: "You are already logged in"}
+    # end
   end
 
   def destroy 

@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :require_user, only: [:edit, :update, :destroy]
-  before_action :require_same_user, only: [:edit, :update, :destroy]
-  skip_before_action :verify_authenticity_token 
+  #before_action :require_user, only: [:edit, :update, :destroy]
+  #before_action :require_same_user, only: [:edit, :update, :destroy]
+  # skip_before_action :verify_authenticity_token 
 
   def show
     #@articles = @user.articles.paginate(page: params[:page], per_page: 5)
@@ -39,20 +39,14 @@ class UsersController < ApplicationController
   end
 
   def create
-    if ( session[:user_id] == nil)
       @user = User.new(user_params)
       if @user.save
         session[:user_id] = @user.id
         render json: @user
-
-        flash[:notice] = "Welcome to Alpha Blog '#{@user.username}', you have successfully signed up"
-        #redirect_to articles_path
+   #    redirect_to articles_path
       else
-        render 'new'
+        render json: {error:"not created"},status: :unprocessable_entity
       end
-    else
-      render json: { message: "You need to log out to create a new user"}
-    end
   end
 
   def destroy

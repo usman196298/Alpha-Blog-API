@@ -1,12 +1,11 @@
 class ArticlesController < ApplicationController
     before_action :set_article, only: [:show, :edit, :update, :destroy]
-    before_action :require_user, except: [:show, :index]
-    before_action :require_same_user, only: [:edit, :update, :destroy]
-    skip_before_action :verify_authenticity_token 
+    #before_action :require_user, except: [:show, :index]
+    #before_action :require_same_user, only: [:edit, :update, :destroy]
 
 
     def show
-        render json:@article
+        render json:{article:@article,cat:@article.categories}
     end
 
     def index 
@@ -21,13 +20,19 @@ class ArticlesController < ApplicationController
     end
 
     def edit
+        render json: @article.categories
     end
 
     def create 
+        # byebug
         @article = Article.new (article_params)
         # @article = Article.new (permitted_params)
         #Below, I have changed the code by assigning it to User.first
+        # @article.user = current_user
+
+        #Below line is for API
         @article.user = current_user
+
         if @article.save
             render json: @article, status: :created
             flash[:notice] = "Article was created successfully !"
@@ -45,21 +50,12 @@ class ArticlesController < ApplicationController
             render json: { message: "Updated successfully"}
             #redirect_to @article
         else
-             render json:{message:"not updated"}
+            render json: {error:"not created"},status: :unprocessable_entity
         end
     end
 
     def destroy
-        if @article.destroy
-            render json: { message: "Article is deleted successfully"}
-        else
-            if @article.user != current_user
-                render json:{message: "only authorized user can delete this article"}
-            else
-                render json: { error: "It does not exist" }
-            end
-        # redirect_to articles_path
-        end
+        @article.destroy
     end
 
 
@@ -80,7 +76,7 @@ class ArticlesController < ApplicationController
 
     def article_params
         #params.require(:article).permit(:title, :description, category_ids: [])
-        params.permit(:title, :description, category_ids: [])
+        params.permit(:title, :description, :category_ids)
     end
 
     def require_same_user
